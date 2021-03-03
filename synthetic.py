@@ -3,7 +3,7 @@ from PIL import Image
 import xmltodict
 from random import randint, randrange
 import os
-import cv2
+#import cv2
 import copy
 from urllib.request import urlopen
 
