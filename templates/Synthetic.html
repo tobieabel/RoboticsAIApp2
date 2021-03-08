@@ -6,14 +6,16 @@
 </head>
 <body>
 <div>
-    <h1>Thank you for uploading your file. It has been stored on Google Cloud and can be accessed here...</h1>
+    <h1>Thank you for uploading your files. They have been stored on Google Cloud and can be accessed here...</h1>
     <p>{{ file }}</p>
+    <p>{{ xml }}</p>
     </div>
 <div>
-    <p>click the button to create 5 new synthetic images from your file</p>
+    <p>click the button to create 5 new synthetic images from your uploaded image</p>
 </div>
 <form action="/synthetic" method="POST">
     <input type="hidden" id="file" name="uploaded_file" value={{ file }}>
+    <input type="hidden" id="xml" name="uploaded_xml" value={{ xml }}>
     <input type="submit" value="Create Synthetic Images">
 </form>
 </body>

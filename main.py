@@ -31,7 +31,10 @@ CLOUD_STORAGE_BUCKET = 'roboticsaiapp_upload2'
 def index():
     return """
 <form method="POST" action="/upload" enctype="multipart/form-data">
-    <input type="file" name="file">
+    <label for="jpg">Choose JPG file</label><br>
+    <input type="file" id="jpg" name="file"> <br>
+    <label for="jpg">Choose XML file</label><br>
+    <input type="file" id="xml" name="xml"> <br>
     <input type="submit">
 </form>
 """
@@ -40,10 +43,10 @@ def index():
 @app.route('/upload', methods=['POST'])
 def upload():
     """Process the uploaded file and upload it to Google Cloud Storage."""
-    uploaded_file = request.files.get('file')
-
-    if not uploaded_file:
-        return 'No file uploaded.', 400
+    jpg_uploaded_file = request.files.get('file')
+    xml_uploaded_file = request.files.get('xml')
+    if (not jpg_uploaded_file) and (not xml_uploaded_file):
+        return 'One of both files not uploaded.', 400
 
     if __name__ == '__main__':
     # Create a Cloud Storage client.
@@ -58,23 +61,29 @@ def upload():
     # Get the bucket that the file will be uploaded to.
     bucket = gcs.get_bucket(CLOUD_STORAGE_BUCKET)
 
-    # Create a new blob and upload the file's content.
-    blob = bucket.blob(uploaded_file.filename)
+    # Create a new blob and upload the file's content. blob refers to the thing you are uploading
+    blob1 = bucket.blob("images/" + jpg_uploaded_file.filename)#you need to add the sub-directory of the bucket to the name of the blob - this is because the folder structure in GCP is not really a folder, just an object with a prefix
+    blob2 = bucket.blob("labels/" + xml_uploaded_file.filename)
 
-    blob.upload_from_string(
-        uploaded_file.read(),
-        content_type=uploaded_file.content_type
+    blob1.upload_from_string(
+        jpg_uploaded_file.read(),
+        content_type=jpg_uploaded_file.content_type
+    )
+    blob2.upload_from_string(
+        xml_uploaded_file.read(),
+        content_type=xml_uploaded_file.content_type
     )
 
     # The public URL can be used to directly access the uploaded file via HTTP.
     #want to return new page which displays the url, and a button to run Synthetic images.py
-    return render_template ('Synthetic.html', file = blob.public_url)
+    return render_template ('Synthetic.html', file = blob1.public_url, xml = blob2.public_url)
 
 @app.route('/synthetic', methods = ['POST'])
 def synth():
     uploaded_file = request.form["uploaded_file"]
+    uploaded_xml = request.form["uploaded_xml"]
     #need to access files in GCP buckets, and save new ones to bucket
-    result = synthetic.show_image(uploaded_file)
+    result = synthetic.show_image(uploaded_file, uploaded_xml)
     return result
 
 
