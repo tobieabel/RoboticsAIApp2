@@ -105,10 +105,12 @@ def show_image(jpg,xml):
         #np_img_background = np.full(np_img_background.shape,np_average) #uncomment this section to use the average background instead
         im[cordinates[i]['ymin']:cordinates[i]['ymax'],cordinates[i]['xmin']:cordinates[i]['xmax'], :] = newbackground# could use np_average instead
 
-        #new_im = Image.fromarray((im))
+        new_im = Image.fromarray((im))
+        new_im.save(filename_edited)#saves image locally as jpg
+
         #new_im.show()
 
 
-    return data_dict
+    return filename_edited
 
 #result=show_image('https://storage.googleapis.com/roboticsaiapp_upload2/labels/Orangeball180731.jpg','https://storage.googleapis.com/roboticsaiapp_upload2/labels/Orangeball180731.xml') # for testing locally

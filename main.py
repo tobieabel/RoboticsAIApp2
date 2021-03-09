@@ -82,9 +82,24 @@ def upload():
 def synth():
     uploaded_file = request.form["uploaded_file"]
     uploaded_xml = request.form["uploaded_xml"]
-    #need to access files in GCP buckets, and save new ones to bucket
+    #call show_image function to create new images and pass back the files for saving to cloud
     result = synthetic.show_image(uploaded_file, uploaded_xml)
-    return result
+    if __name__ == '__main__':
+    # Create a Cloud Storage client.
+        gcs = storage.Client.from_service_account_json('roboticsaiapp2Key.json')
+
+
+    # Or Explicitly use service account credentials by specifying the private key
+    # file.
+    else:
+        gcs = storage.Client()
+
+    # Get the bucket that the file will be uploaded to.
+    bucket = gcs.get_bucket(CLOUD_STORAGE_BUCKET)
+    blob3 = bucket.blob("images/" + result)#is the blob just the filepath?
+    blob3.upload_from_filename(result)#have to upload from filename not string or file as i only returned the filename string
+
+    return "new jpg file created and loaded to cloud"
 
 
 
