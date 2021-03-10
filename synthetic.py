@@ -106,11 +106,36 @@ def show_image(jpg,xml):
         im[cordinates[i]['ymin']:cordinates[i]['ymax'],cordinates[i]['xmin']:cordinates[i]['xmax'], :] = newbackground# could use np_average instead
 
         new_im = Image.fromarray((im))
-        new_im.save(filename_edited)#saves image locally as jpg
+        new_im.save(filename_edited)#saves image locally as jpg - need to save to a folder and store all jpg filenames in a list which you return to main
+        data_dict_edited = copy.deepcopy(data_dict)
+        data_dict_edited['annotation']['filename'] = filename_edited
+        data_dict_edited['annotation']['path'] = '/my-project-name/' + filename_edited
 
+        new_cordinates_iter = 0
+        if data_type_list:  # i.e data_type is a list so there are multiple balls
+            for i in data_dict_edited['annotation']['object']:
+                i['bndbox']['ymin'] = str(new_cordinates[new_cordinates_iter]['ymin'])
+                i['bndbox']['xmin'] = str(new_cordinates[new_cordinates_iter]['xmin'])
+                i['bndbox']['ymax'] = str(new_cordinates[new_cordinates_iter]['ymax'])
+                i['bndbox']['xmax'] = str(new_cordinates[new_cordinates_iter]['xmax'])
+                new_cordinates_iter += 1
+        else:  # i.e. there is just one ball
+            data_dict_edited['annotation']['object']['bndbox']['ymin'] = str(
+                new_cordinates[new_cordinates_iter]['ymin'])
+            data_dict_edited['annotation']['object']['bndbox']['xmin'] = str(
+                new_cordinates[new_cordinates_iter]['xmin'])
+            data_dict_edited['annotation']['object']['bndbox']['ymax'] = str(
+                new_cordinates[new_cordinates_iter]['ymax'])
+            data_dict_edited['annotation']['object']['bndbox']['xmax'] = str(
+                new_cordinates[new_cordinates_iter]['xmax'])
+
+        output = xmltodict.unparse(data_dict_edited, pretty=True)
+        output1 = output[39:]
+        with open(xml_filename_edited, 'w') as file:
+            file.write(output1)
         #new_im.show()
 
 
-    return filename_edited
+    return (filename_edited, xml_filename_edited)
 
 #result=show_image('https://storage.googleapis.com/roboticsaiapp_upload2/labels/Orangeball180731.jpg','https://storage.googleapis.com/roboticsaiapp_upload2/labels/Orangeball180731.xml') # for testing locally

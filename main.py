@@ -96,10 +96,19 @@ def synth():
 
     # Get the bucket that the file will be uploaded to.
     bucket = gcs.get_bucket(CLOUD_STORAGE_BUCKET)
-    blob3 = bucket.blob("images/" + result)#is the blob just the filepath?
-    blob3.upload_from_filename(result)#have to upload from filename not string or file as i only returned the filename string
+    blob3 = bucket.blob("images/" + result[0])#is the blob just the filepath?
+    blob3.upload_from_filename(result[0])#have to upload_from_filename not string or file as i only returned the filename string
+    blob4 = bucket.blob("labels/" + result[1])
+    blob4.upload_from_filename(result[1])
 
-    return "new jpg file created and loaded to cloud"
+    os.remove(result[0])#remove the locally created jpg once uploaded
+    os.remove(result[1])#and xml file
+    return"""
+    <h1>New jpg and xml files have been created. They have been stored on Google Cloud and can be accessed here...</h1>
+    <p><a href="{}">Synthetic jpg</a></p>
+    <p><a href="{}">Synthetic xml</a></p>
+    """.format(blob3.public_url, blob4.public_url)
+
 
 
 
