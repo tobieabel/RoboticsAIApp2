@@ -3,7 +3,7 @@ from PIL import Image
 import xmltodict
 from random import randint, randrange
 import os
-#import cv2 - this is causing an error on deployment, maybe something about the version
+import cv2 #- this is causing an error on deployment, maybe something about the version
 import copy
 from urllib.request import urlopen
 
@@ -134,6 +134,7 @@ def show_image(jpg,xml):
         with open(xml_filename_edited, 'w') as file:
             file.write(output1)
         #new_im.show()
+        blur_im = cv2.GaussianBlur(new_im, (11, 11), 0)
 
 
     return (filename_edited, xml_filename_edited)
