@@ -100,14 +100,18 @@ def synth():
     blob3.upload_from_filename(result[0])#have to upload_from_filename not string or file as i only returned the filename string
     blob4 = bucket.blob("labels/" + result[1])
     blob4.upload_from_filename(result[1])
+    blob5 = bucket.blob("images/" + result[2])
+    blob5.upload_from_filename(result[2])
 
     os.remove(result[0])#remove the locally created jpg once uploaded
     os.remove(result[1])#and xml file
+    os.remove(result[2])#and blur jpg
     return"""
     <h1>New jpg and xml files have been created. They have been stored on Google Cloud and can be accessed here...</h1>
     <p><a href="{}">Synthetic jpg</a></p>
     <p><a href="{}">Synthetic xml</a></p>
-    """.format(blob3.public_url, blob4.public_url)
+    <p><a href="{}">blur jpg</a></p>
+    """.format(blob3.public_url, blob4.public_url, blob5.public_url)
 
 
 
