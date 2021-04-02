@@ -3,9 +3,10 @@ from PIL import Image
 import xmltodict
 from random import randint, randrange
 import os
-import cv2
+import cv2#had to use opencv-headless-python package, as the opencv-pythojn package was causing error on deployment to GCS
 import copy
 from urllib.request import urlopen
+
 
 
 def show_image(jpg,xml):

@@ -16,6 +16,8 @@
 import logging
 import os
 import synthetic
+import requests
+import socket
 
 from flask import Flask, request, render_template
 from google.cloud import storage
@@ -30,15 +32,22 @@ CLOUD_STORAGE_BUCKET = 'roboticsaiapp_upload2'
 @app.route('/')
 def index():
     return """
-<form method="POST" action="/upload" enctype="multipart/form-data">
+    <form method="POST" action="/prediction" enctype="multipart/form-data">
     <label for="jpg">Choose JPG file</label><br>
     <input type="file" id="jpg" name="file"> <br>
     <label for="jpg">Choose XML file</label><br>
     <input type="file" id="xml" name="xml"> <br>
     <input type="submit">
-</form>
+    </form>
 """
 
+@app.route('/prediction', methods=['POST'])
+def predict():#use this function to get the files uploaded by user, and send to cloud function using post in 'requests' module
+    url = 'https://us-central1-roboticsaiobejctdetection.cloudfunctions.net/object_detection'
+    jpg_uploaded_file = request.files.get('file')
+    file = {'file': jpg_uploaded_file}
+    prediction = requests.post(url,files = file)#this send the file to the cloud function endpoint
+    return """<p>{}</p>""".format(prediction.content)
 
 @app.route('/upload', methods=['POST'])
 def upload():
@@ -46,15 +55,16 @@ def upload():
     jpg_uploaded_file = request.files.get('file')
     xml_uploaded_file = request.files.get('xml')
     if (not jpg_uploaded_file) and (not xml_uploaded_file):
-        return 'One of both files not uploaded.', 400
+        return 'One or both files not uploaded.', 400
 
     if __name__ == '__main__':
-    # Create a Cloud Storage client.
+        # Explicitly use service account credentials by specifying the private key
+        # file.
         gcs = storage.Client.from_service_account_json('roboticsaiapp2Key.json')
 
 
-    # Or Explicitly use service account credentials by specifying the private key
-    # file.
+
+    # Create a Cloud Storage client.
     else:
         gcs = storage.Client()
 
@@ -106,6 +116,7 @@ def synth():
     os.remove(result[0])#remove the locally created jpg once uploaded
     os.remove(result[1])#and xml file
     os.remove(result[2])#and blur jpg
+    #now return a fresh page with the below references, and an option to perform object detection on the new synthetic image
     return"""
     <h1>New jpg and xml files have been created. They have been stored on Google Cloud and can be accessed here...</h1>
     <p><a href="{}">Synthetic jpg</a></p>
@@ -113,6 +124,15 @@ def synth():
     <p><a href="{}">blur jpg</a></p>
     """.format(blob3.public_url, blob4.public_url, blob5.public_url)
 
+@app.route('/connect')
+def connect():#create a socket and start listening on port 443 for incoming messages - move this to html page
+    s=socket.socket()
+    s.bind(('',443))
+    s.listen(5)
+    while True:
+        c, address = s.accept()
+        c.send("thanks for connecting")
+        return #need to return a message to the pi, which then starts sending jpgs to a url which is referenced in my html ,src. element
 
 
 

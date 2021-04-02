@@ -195,7 +195,7 @@ for i in range(len(jpgFiles)):
         im[new_cordinates[i]['ymin']:new_cordinates[i]['ymax'], new_cordinates[i]['xmin']:new_cordinates[i]['xmax'], :] = np_img_ball
 
         #back fill original cordinates with background
-        #np_img_background = np.full(np_img_background.shape,np_average)
+        #np_img_background = np.full(np_img_background.shape,np_average) #uncomment this section to use the average background instead
         im[cordinates[i]['ymin']:cordinates[i]['ymax'],cordinates[i]['xmin']:cordinates[i]['xmax'], :] = newbackground# could use np_average instead
 
     #save new synthetic image array to jpg and the new cordinates to a new xmlfile
