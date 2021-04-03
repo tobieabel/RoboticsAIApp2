@@ -129,10 +129,15 @@ def connect():#create a socket and start listening on port 443 for incoming mess
     s=socket.socket()
     s.bind(('',443))
     s.listen(5)
-    while True:
+    while True:#need to think if this should be continous loop
         c, address = s.accept()
-        c.send("thanks for connecting")
-        return #need to return a message to the pi, which then starts sending jpgs to a url which is referenced in my html ,src. element
+        if c:
+            c.send("thanks for connecting")#should you test for c first, and only if true then send and return
+            return """
+            <h1>Establishing Connection...</h1>
+            """#need to return a message to the pi, which then starts sending jpgs to a url which is referenced in my html ,src. element
+        else:
+            continue
 
 
 
