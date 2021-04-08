@@ -18,6 +18,7 @@ import os
 import synthetic
 import requests
 import socket
+import socketio
 
 from flask import Flask, request, render_template
 from google.cloud import storage
@@ -127,9 +128,9 @@ def synth():
 @app.route('/connect')
 def connect():#create a socket and start listening on port 443 for incoming messages - move this to html page
     s=socket.socket()
-    s.bind(('',443))
+    s.bind(('',1025))#try a different port
     s.listen(5)
-    while True:#need to think if this should be continous loop
+    while True:#need to think if this should be continous loop - remove the loop
         c, address = s.accept()
         if c:
             c.send("thanks for connecting")#should you test for c first, and only if true then send and return
